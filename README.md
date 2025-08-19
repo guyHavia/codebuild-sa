@@ -25,7 +25,9 @@ It checks for misconfigured webhooks, overly permissive IAM roles, and insecure 
 - [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)  
 - AWS credentials configured (via AWS CLI, environment variables, or IAM role)
 
-Install dependencies:
+---
+
+## Install dependencies:
 ```bash
 pip install boto3
 ```

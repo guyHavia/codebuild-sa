@@ -6,17 +6,18 @@ It checks for misconfigured webhooks, overly permissive IAM roles, and insecure 
 ---
 
 ## ✨ Features
-- 🔍 **Detects runner projects** (self-hosted GitHub/GitLab/CI runners in CodeBuild)
-- 🔒 **Validates webhook filters**:
-  - Ensures branch protection is in place
-  - Flags permissive filter groups that can bypass restrictions
-- 👤 **Audits IAM service roles**:
-  - Verifies assume-role trust policies
-  - Flags overly permissive roles (e.g., `AdministratorAccess`, `PowerUserAccess`)
-- 🌐 **Checks VPC security groups**:
-  - Warns on inbound rules (unusual for CodeBuild)
-  - Detects overly permissive egress (e.g., `0.0.0.0/0` all ports)
-- 📊 **Summarized report** with project issues and runner identification
+
+- **CodeBuild Runner Audit (`runner` mode)**  
+  - Detects runner projects (self-hosted GitHub Actions runners, GitLab runners, etc.)  
+  - Audits **webhook filters & branch protections**  
+  - Validates **IAM service roles** (assume role policy, admin permissions, inline policies)  
+  - Reviews **security group rules** for excessive permissions  
+
+- **OIDC IAM Role Audit (`oidc` mode)**  
+  - Inspects OIDC role trust policies  
+  - Flags **wildcard or overly broad conditions** in `sub` claims  
+  - Highlights risks like org-wide or repo-wide access  
+  - Provides **recommendations** for safe OIDC trust policies 
 
 ---
 
@@ -58,6 +59,29 @@ The IAM role or user running this tool must have the following permissions:
   ]
 }
 ```
+---
+## 🚀 Usage
+
+Run the tool in one of two modes depending on your audit needs:
+
+### 1. CodeBuild Security Audit (`runner` mode)
+This mode audits **all CodeBuild projects** in the current AWS account.  
+It checks for runner projects, verifies webhook filter protections, inspects IAM service roles, and analyzes security groups.
+
+```bash
+python3 audit_codebuild.py runner
+```
+
+### 2. OIDC Role Trust Policy Audit (`oidc` mode)
+
+This mode audits the **trust policy of an IAM role** that uses OIDC (for example, GitHub Actions → AWS integration).  
+It identifies risky configurations such as **wildcard patterns**, **org-wide repository access**, and **branch-wide permissions**.
+
+#### Command
+```bash
+python3 audit_codebuild.py oidc <role_name>
+```
+---
 
 ## Output Example
 ![Sample Output](https://github.com/guyHavia/codebuild-sa/blob/788e787ed4fb64905cd507a4bc47c8f311d010a1/images/output_example.png)
